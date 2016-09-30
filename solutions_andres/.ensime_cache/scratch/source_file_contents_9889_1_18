@@ -1,0 +1,18 @@
+// see http://ensime.github.io/build_tools/sbt/
+
+// 1) build/configure project once (cd, then sbt, then ensimeConfigProject)
+// 2) make any .scala file and start the ensime server with M-x ensime
+// 3) ensure your classes are compiled and type C-c C-v z for the scala repl
+//
+
+
+object HelloWorld {
+  val x = 234
+  def main(args: Array[String]): Unit = {
+    println("Hello, world! "+x)
+  }
+}
+
+
+
+println("dfasdfs")

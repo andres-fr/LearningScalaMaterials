@@ -1,0 +1,28 @@
+// see http://ensime.github.io/build_tools/sbt/
+
+// 1) build/configure project once (cd, then sbt, then ensimeConfig)
+// 2) create empty build.sbt file
+// 3) make any .scala file and start the ensime server with M-x ensime
+// 4) C-c C-v b to eval buffer
+
+
+/*
+
+
+
+ */
+
+
+object HelloWorld {
+  val x = 234
+  def main(args: Array[String]): Unit = {
+    println("Hello, world! "+x)
+  }
+}
+
+
+
+
+
+
+println("dfasdfs")
