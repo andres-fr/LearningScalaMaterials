@@ -106,8 +106,91 @@ highFn2[Double, Double](100, 10, 3, _+_/_) // returns 103.3333333333
 
 
 ////////////////////////////////////////////////////////////////////////////////
-//////     PARTIAL FN APPLICATION, CURRYING  ///////////////////////////////////
+//////     PARTIAL FN APPLICATION      /////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////
 def multipleOf(a:Int, b:Int):Boolean = {b%a==0}
 def multipleOf3 = multipleOf(3, _:Int)
 multipleOf3(12)
+
+////////////////////////////////////////////////////////////////////////////////
+//////     CURRYING   //////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////
+
+// A cleaner way to partially apply functions is to use functions with
+// multiple parameter lists. Instead of breaking up a parameter list into
+// applied and unapplied parameters, apply the parameters for one list
+// while leaving another list unapplied. This is a technique known as
+// currying the function. In terms of a function type, a function with
+// multiple parameter lists is considered to be a chain of multiple
+// functions. Each separate parameter list is considered to be a separate
+// function call
+def curryMultipleOf(a:Int)(b:Int):Boolean = {b%a==0}
+def curryMultipleOf5 = curryMultipleOf(5)_
+curryMultipleOf5(12)
+// This functionality could be easily implemented: the benefit that
+// partially applied functions and curried functions provide is an
+// expressive syntax for doing so.
+
+
+////////////////////////////////////////////////////////////////////////////////
+//////     BY-NAME PARAMETERS   ////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////
+
+// defining a parameter type as (x:=>Int) instead of (x:Int), means that x is
+// supposed to return an int. It can be an int itself!
+// IMPORTANT: PARAMETERS OF TYPE "T" WILL BE BOUND ONCE AS val WHEN THE FUNCTION
+// IS EXECUTED. PARAMETERS OF TYPE "=>T" WILL BE CALLED EACH TIME THEY APPEAR!!
+// IN LISP IS LIKE LET VS APPLY
+def testbyname(x: =>Int):Int = {
+  println(s"testbyname called with x=$x") // this $x forces an eventual new call to the fn
+  x*2 // this too
+}
+def fn(y:Int):Int={println(s"fn was called with $y"); y}
+//now call testbyname with an int, and with fn
+testbyname(5)
+testbyname(fn(5)) // fn is called twice: one per line in testbyname
+
+// HIGHER ORDER+PARAMETER GROUPING:
+def highFn1(check:Int)(fn: Int=>Int):Unit = {
+  if (check<10) println(fn(check)) else println(s"only Int<10 accepted!") 
+}
+
+val multiplierByTwoIfLowerThan10 = highFn1(_:Int)(_*2)
+multiplierByTwoIfLowerThan10(9)
+val multiplySevenIfLowerThan10 = highFn1(_:Int){s => // this is the same, a fn
+    s*7 // {s=>s*7} is equivalent to (_*7)
+  }
+multiplySevenIfLowerThan10(5)
+
+
+// Functions that can wrap indiscriminate blocks of code with utilities
+// in this way are a major benefit of using the “expression block” style
+// of higher-order function invoca‐ tions. Some of the other uses for
+// this invocation style include:
+// • Managing database transactions, where
+// the higher-order function opens the ses‐ sion, invokes the function
+// parameter, and then closes the transaction with a commit or rollback.
+// • Handling expected errors with retries, by calling the function
+// parameter a set num‐ ber of times until it stops causing errors.
+// • Conditionally invoking the function parameter based on local, global,
+// or external values (e.g., a database setting or environment variable)
+
+
+////////////////////////////////////////////////////////////////////////////////
+//////     PARTIAL FUNCTIONS    ////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////
+// Scala’s partial functions are function literals that apply a series of
+// case patterns to their input, requiring that the input match at least
+// one of the given patterns. Invoking one of these partial functions
+// with data that does not meet at least one case pattern results in a
+// Scala error. NOT THE SAME AS PARTIALLY APPLIED FNs
+
+// useful when working with collections and pattern matching. For
+// example, you can “collect” every item in a collection that is accepted
+// by a given partial function
+
+
+////////////////////////////////////////////////////////////////////////////////
+//////     EXERCISES     ////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////
+
