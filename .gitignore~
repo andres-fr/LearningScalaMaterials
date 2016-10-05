@@ -1,5 +1,0 @@
-.DS_Store
-
-# exclude everything in solutions_andres except the exercises 
-/solutions_andres/exercises
-!/solutions_andres/exercises
