@@ -194,3 +194,40 @@ multiplySevenIfLowerThan10(5)
 //////     EXERCISES     ////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////
 
+// 1)
+val max = (a:Int, b:Int)=>{if (a>b) a else b} // the fn literal (same as def)
+def ex1_hi(t:(Int, Int, Int),fn:(Int,Int)=>Int):Int={fn(t._1, fn(t._2, t._3))}
+ex1_hi((3,5,2), max)
+
+// 3)
+def fn_creator(x:Int):(Int=>Int) = {l:Int=>x*l}
+def multBy3 = fn_creator(3)
+multBy3(4)
+
+// 4) def fzero[A](x: A)(f: A => Unit): A = { f(x); x }
+// This HO-function works on a parametrized type A, like
+//   identity[T](x:T){x}.  It becomes two parameters, an element of type
+//   A and a procedure that receives an element (of type A too) creating
+//   side effects. Whatever the type A is, the procedure is called on the
+//   input in order to create side effects, and then the input itself is
+//   returned. This universal wrapping HO-function can be helpful for
+//   example for logging purposes (see example). The parameters are also
+//   grouped, allowing the partial application of the function (see example).
+
+def fzero[A](x: A)(f: A => Unit): A = { f(x); x }
+def log(x:Any):Unit = {println(s"logging some info about $x")}
+def logger[A](x:A):A = fzero(x)(log)
+logger(3)
+logger("three")
+logger(true)
+
+
+// 5)
+def square(m:Double):Double = {m*m}
+val square = (m:Double)=>{m*m}
+square(3)
+
+// 6)
+def conditional[A](a:A, p:(A=>Boolean), f:(A=>A)):A= {if (p(a)) f(a) else a}
+conditional(123, (x:Int)=>{x==124}, (x:Int)=>{x*2})
+conditional[Double](123.456, {_==123.456}, {_*2}) // compact notation
