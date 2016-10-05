@@ -189,3 +189,5 @@ def myFactors(n:Int, result:List[Int]=List()):List[Int] = {
 // at filtering, when only the first valid result is needed.
 def factorsList (l:List[Int]):List[Int]=l.flatMap(myFactors(_).filter(!l.contains(_)))
 factorsList(List(9, 11,13,15))
+
+// 7)
