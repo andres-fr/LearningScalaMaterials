@@ -40,6 +40,7 @@ numbers.head
 numbers.tail
 numbers(0)// the first elt
 
+
 // SOME METHODS: FOREACH (procedure), MAP (yields), REDUCE (to 1 item)
 numbers.foreach((x:Int)=>println(x))
 numbers.map((x:Int)=>2*x)
@@ -61,6 +62,7 @@ val othernums = Set(10, 20, 20, 20, 20, 20, 30, 5)
 // MAP:
 val myMap = Map("a"->1, "b"->2, "d" -> -123) // myMap[String, Int] doesnt work...
 myMap.foreach((x:(String, Int))=> println(x))
+myMap -"a" + ("e"-> false) // this works
 // destructuring not possible?? myMap.foreach(((a:String,b:Int))=> println(a))
 // here its possible!!
 for ((t, w)<- myMap) {println(w)}
@@ -189,3 +191,7 @@ def myFactors(n:Int, result:List[Int]=List()):List[Int] = {
 // at filtering, when only the first valid result is needed.
 def factorsList (l:List[Int]):List[Int]=l.flatMap(myFactors(_).filter(!l.contains(_)))
 factorsList(List(9, 11,13,15))
+
+// 7)
+val url = "http://api.openweathermap.org/data/2.5/forecast?mode=xml&lat=55&lon=0"
+val l: List[String] = io.Source.fromURL(url).getLines.toList // error API needs account
