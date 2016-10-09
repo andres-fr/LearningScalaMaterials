@@ -192,6 +192,63 @@ def myFactors(n:Int, result:List[Int]=List()):List[Int] = {
 def factorsList (l:List[Int]):List[Int]=l.flatMap(myFactors(_).filter(!l.contains(_)))
 factorsList(List(9, 11,13,15))
 
-// 7)
-val url = "http://api.openweathermap.org/data/2.5/forecast?mode=xml&lat=55&lon=0"
-val l: List[String] = io.Source.fromURL(url).getLines.toList // error API needs account
+
+
+
+
+
+
+
+// 7) openweatherAPI: scala12345, 12345s....
+val url = "http://api.openweathermap.org/data/2.5/weather?q=frankfurt,de&appid=c998273c5acfe85ec9e5b192fcd80945"
+//a)
+val weather = io.Source.fromURL(url).getLines.toList(0) // the string, like this:
+                                                  // String = {"coord":{"lon":8.68,"lat":50.12},"weather":[{"id":500,"main":"Rain","description":"light rain","icon":"10d"}],"base":"stations","main":{"temp":282.81,"pressure":1001.23,"humidity":86,"temp_min":282.81,"temp_max":282.81,"sea_level":1035.51,"grnd_level":1001.23},"wind":{"speed":1.79,"deg":339.001},"rain":{"3h":0.165},"clouds":{"all":68},"dt":1475914973,"sys":{"message":0.0057,"country":"DE","sunrise":1475905034,"sunset":1475945227},"id":2925533,"name":"Frankfurt am Main","cod":200}
+
+// b) regex the string to find city name and country:
+def returnMatches(regx:String, container:String)= {
+  regx.r.findAllIn(container).matchData.flatMap(_.subgroups).toList
+}
+val weatherList = returnMatches(""""(\w+":[^\[{},]+)""", weather).map(_.replaceAll("\"", "").split(":")).map{case Array(a,b)=>(a,b)}
+val weatherMap = weatherList.toMap
+//
+
+val cityCountry = List("name", "country").map(weatherMap(_)).mkString(", ")
+// or alternatively
+val cityCountry = returnMatches("""(?:name|country)":"([^"]+)""", weather).reverse.mkString(", ")
+
+// c)
+weatherList.size
+
+
+//d)
+def getWeatherMap() = {
+  val url = "http://api.openweathermap.org/data/2.5/weather?q=frankfurt,de&appid=c998273c5acfe85ec9e5b192fcd80945"
+  val weather = io.Source.fromURL(url).getLines.toList(0)
+  val wList = """"(\w+":[^\[{},]+)""".r.findAllIn(weather).matchData.flatMap(_.subgroups).toList
+  val cleanList = wList.map(_.replaceAll("\"", "").split(":")).map{case Array(a,b)=>(a,b)}
+  cleanList.toMap
+}
+
+def printReport() = {
+  val m = getWeatherMap
+  val city = f"Here is the report for ${m("name")}. "
+  val temp = f"the temperature is going to be ${m("temp_min").toDouble-273.15}%.2f degrees Celsius. "
+  val desc = f"Sky description: ${m("description")}. Thank you!"
+  city++temp++desc
+}
+printReport
+
+// import scala.util.parsing.json._
+// val json = JSON.parseFull(l)
+// val parsed:Map[String, Any] = JSON.parseFull(l).get.asInstanceOf[Map[String, Any]]
+// parsed.toList.flatten
+// println(s"there are ${} segments")
+
+
+// g)
+val minTemp = weatherMap("temp_min").toFloat - 273.15
+val maxTemp = weatherMap("temp_max").toFloat - 273.15
+
+//h)
+val avgTmp = (minTemp+maxTemp)/2
