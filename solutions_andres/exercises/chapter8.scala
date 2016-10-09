@@ -144,4 +144,100 @@ package com {
 //////     EXERCISES     ///////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////
 
-// 1)
+// 1) a,b,c,d
+class Console(var make:String, var model:String,
+              var formatsSupported:List[String], var maxVideoRes:(Int, Int),
+              var debutDate:java.util.Date=null, var wifiType:String=""){
+  override def toString = {
+    val fmts = formatsSupported.mkString(", ")
+    s"Console(make=$make, model=$model, debutDate=$debutDate, "++
+    s"wifiType=$wifiType, formatsSupported=[$fmts], maxVideores=$maxVideoRes)"
+  }
+}
+
+class Game(var name:String, var maker:String, var consolesSupported:List[(String, String)]){
+  def isSupported(c:Console):Boolean = {consolesSupported.contains((c.make, c.model))}
+}
+
+val c1 = new Console("playstation", "fünf", List("HDMI", "VIH"), (1080, 720))
+val c2 = new Console("gameboy", "brick", List(), (8, 8), wifiType="ultraFastEthernet")
+val g = new Game("extreme train simulator", "STFGames", List(("playstation", "three"), ("gameboy", "brick")))
+g.isSupported(c2) // true
+g.isSupported(c1) // false
+
+
+// 2)
+
+class Container[A](val content:A, val nxt:Container[A]=null){
+  override def toString = content.toString
+}
+class MyList[A](val self:A*){
+  var pointer = new Container(self.last)
+  for (x<-self.reverse.tail){pointer = new Container(x, pointer)}
+  pointer
+  private def genericIterator[B](fn:A=>B)(c:Container[A]=pointer){
+    if(c.content!=null){fn(c.content); util.Try(genericIterator(fn)(c.nxt))}
+  }
+  def foreach[B](fn:A=>B) = genericIterator(fn)(pointer)
+  def printContents = foreach(println)
+  def apply(n:Int):A={
+    var cell = pointer
+    for (i<- 1 to n) cell = cell.nxt
+    cell.content
+  }
+}
+val x = new MyList(1,2,3,4)
+x.foreach(_*2)
+x.printContents
+x(3)
+
+
+// CREATE OWN COLLECTION WITH OWN TYPE-PARAMETER POSSIBILITY, like in:
+def example[A](x:A) = List[A](x, x, x) // try with example(2); example("two")
+// Traversable is the parent of iterable. lets take it to define a monadic collection:
+class Singular[A](element:A) extends Traversable[A]{
+  def foreach[B](f:A=>B) = f(element)
+}
+val s = new Singular("asdf")
+s.tail // the traversable methods are there
+
+
+Seq(1)
+
+
+
+// 4)
+val synth = javax.sound.midi.MidiSystem.getSynthesizer
+
+synth.open()
+val channel = synth.getChannels.head
+channel.noteOn(50, 80) // notenumber, velocity
+Thread.sleep(250)
+channel.noteOff(50) // notenumber
+Thread.sleep(1000)
+synth.close()
+
+
+
+def playSeq(seq:Seq[Int], synth:javax.sound.midi.Synthesizer, dur:Int=250):Unit={
+  val velocity = 127 // max midi volume
+  lazy val ch = synth.getChannels.head
+  /*
+  val threads = for (i<- seq) yield new Thread(){
+      override def run(){channel.noteOn(i, 127); Thread.sleep(duration); channel.noteOff(i)}
+    }
+   */
+  synth.open()
+ // threads.foreach(t => {t.start(); t.join()})
+  seq.foreach(t => {ch.noteOn(t, velocity); Thread.sleep(dur); ch.noteOff(t)})
+  synth.close()
+}
+var synth:javax.sound.midi.Synthesizer = null
+synth = Option(synth).getOrElse(javax.sound.midi.MidiSystem.getSynthesizer)
+playSeq(Seq(60, 62, 64, 65, 67, 69, 71, 72), synth)
+playSeq(50 to 100 by 5, synth, 100)
+playSeq(10 to 120 by 3, synth, 30)
+
+// it isn't possible to systematically limit the amount of instances of a class
+// only by ussing the access controls (private, sealed, final, etc), that's
+// what scala's object (singleton) is for.
