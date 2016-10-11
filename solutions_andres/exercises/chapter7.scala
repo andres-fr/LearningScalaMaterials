@@ -294,6 +294,10 @@ safeGetProperty("java.home") // ok
 // 6)
 val url = "https://github.com/andres-fr/bachelor-thesis/commits/master.atom"
 
+io.Source.fromURL(url).getLines.map(_.trim).foreach(println _)
+
+
+
 def urlToList(s:String)= {
   val s = io.Source.fromURL(url)
   val text = s.getLines.map(_.trim).mkString("")
