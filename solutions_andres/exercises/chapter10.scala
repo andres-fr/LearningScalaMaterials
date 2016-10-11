@@ -40,6 +40,27 @@
 // class even though they have different types.
 
 
+// starting with tuples:
+Tuple2[Int, String](1, "asdf") // same as simply (1, "asdf")
+// this 2 are also the same:
+new Function[Int, Int]{def apply(x:Int)=x*2} // same as {x:Int=>x*2} or val f1:Int=>Int = _+2
+
+
+/// IMPLICIT CLASSES: provide a type-safe way to “monkey-patch” new
+// methods and fields onto existing classes. Through automatic
+// conversion from the original class to the new class, methods and
+// fields in the implicit class can be invoked directly on the original
+// class without any changes to the class’s structure
+
+object ImplicitClasses {
+  implicit class Hello(s: String) {
+    def hello = s"Hello, $s"
+  }
+  def test = {println( "World".hello )}
+}
+ImplicitClasses.test // this prints "Hello, World"
+
+
 ////////////////////////////////////////////////////////////////////////////////
 //////     EXERCISES     ///////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////
